@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+char a[5][5];
+void matrix(char key[])
+{
+    int used[26] = {0}, i, j, k = 0;
+    char c;
+    for (i = 0; key[i]; i++) {
+        c = toupper(key[i]);
+        if (c == 'J') c = 'I';
+        if (!used[c-'A']) {
+            a[k/5][k%5] = c;
+            used[c-'A'] = 1;
+            k++;
+        }
+    }
+    for (c='A'; c<='Z'; c++) {
+        if (c == 'J') continue;
+        if (!used[c-'A']) {
+            a[k/5][k%5] = c;
+            used[c-'A'] = 1;
+            k++;
+        }
+    }
+}
+void pos(char c, int *r, int *col)
+{
+    int i,j;
+    if(c=='J') c='I';
+
+    for(i=0;i<5;i++)
+        for(j=0;j<5;j++)
+            if(a[i][j]==c) {
+                *r=i; *col=j;
+            }
+}
+void playfair(char text[], char out[], int enc)
+{
+    int i,r1,c1,r2,c2;
+    char x,y;
+    for(i=0;text[i];i+=2) {
+        x=text[i]; y=text[i+1];
+        pos(x,&r1,&c1);
+        pos(y,&r2,&c2);
+
+        if(r1==r2) {
+            out[i]=a[r1][(c1+(enc?1:4))%5];
+            out[i+1]=a[r2][(c2+(enc?1:4))%5];
+        }
+        else if(c1==c2) {
+            out[i]=a[(r1+(enc?1:4))%5][c1];
+            out[i+1]=a[(r2+(enc?1:4))%5][c2];
+        }
+        else {
+            out[i]=a[r1][c2];
+            out[i+1]=a[r2][c1];
+        }
+    }
+    out[i]='\0';
+}
+int main()
+{
+    char key[20], msg[100], enc[100], dec[100];
+    printf("Enter key: ");
+    scanf("%s",key);
+    matrix(key);
+    printf("Enter message: ");
+    scanf("%s",msg);
+    if(strlen(msg)%2)
+        strcat(msg,"X");
+    playfair(msg,enc,1);
+    playfair(enc,dec,0);
+    printf("Encrypted: %s\n",enc);
+    printf("Decrypted: %s\n",dec);
+
+    return 0;
+}
