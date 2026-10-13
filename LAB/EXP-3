@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+int gcd(int a, int b)
+{
+    while (b != 0)
+    {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+int modInverse(int a, int m)
+{
+    for (int i = 1; i < m; i++)
+    {
+        if ((a * i) % m == 1)
+            return i;
+    }
+    return -1;
+}
+void encrypt(char text[], int a, int b)
+{
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        if (isalpha(text[i]))
+        {
+            char base = isupper(text[i]) ? 'A' : 'a';
+            text[i] = ((a * (text[i] - base) + b) % 26) + base;
+        }
+    }
+}
+void decrypt(char text[], int a, int b)
+{
+    int inverse = modInverse(a, 26);
+
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        if (isalpha(text[i]))
+        {
+            char base = isupper(text[i]) ? 'A' : 'a';
+            text[i] = (inverse * ((text[i] - base) - b + 26) % 26) + base;
+        }
+    }
+}
+
+int main()
+{
+    char text[100];
+    int a, b;
+    printf("Enter the message: ");
+    fgets(text, sizeof(text), stdin);
+    printf("Enter value of a: ");
+    scanf("%d", &a);
+    printf("Enter value of b: ");
+    scanf("%d", &b);
+    if (gcd(a, 26) != 1)
+    {
+        printf("Invalid value of a. It must be relatively prime to 26.\n");
+        return 0;
+    }
+
+    encrypt(text, a, b);
+    printf("Encrypted text: %s", text);
+
+    decrypt(text, a, b);
+    printf("Decrypted text: %s", text);
+
+    return 0;
+}
