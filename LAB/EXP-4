@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void encrypt(char text[], char key[], char encrypted[])
+{
+    int i, j = 0;
+    int keyLen = strlen(key);
+
+    for (i = 0; text[i] != '\0'; i++)
+    {
+        if (isalpha(text[i]))
+        {
+            char base = isupper(text[i]) ? 'A' : 'a';
+
+            encrypted[i] = ((text[i] - base) +
+                            (toupper(key[j % keyLen]) - 'A')) % 26 + base;
+
+            j++;
+        }
+        else
+        {
+            encrypted[i] = text[i];
+        }
+    }
+    encrypted[i] = '\0';
+}
+void decrypt(char encrypted[], char key[], char decrypted[])
+{
+    int i, j = 0;
+    int keyLen = strlen(key);
+
+    for (i = 0; encrypted[i] != '\0'; i++)
+    {
+        if (isalpha(encrypted[i]))
+        {
+            char base = isupper(encrypted[i]) ? 'A' : 'a';
+
+            decrypted[i] = ((encrypted[i] - base) -
+                            (toupper(key[j % keyLen]) - 'A') + 26) % 26 + base;
+
+            j++;
+        }
+        else
+        {
+            decrypted[i] = encrypted[i];
+        }
+    }
+    decrypted[i] = '\0';
+}
+int main()
+{
+    char message[100], key[100];
+    char encrypted[100], decrypted[100];
+    printf("Enter the message: ");
+    fgets(message, sizeof(message), stdin);
+    message[strcspn(message, "\n")] = '\0';
+    printf("Enter the key: ");
+    scanf("%s", key);
+    encrypt(message, key, encrypted);
+    printf("\nEncrypted Message: %s\n", encrypted);
+    decrypt(encrypted, key, decrypted);
+    printf("Decrypted Message: %s\n", decrypted);
+    return 0;
+}
